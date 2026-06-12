@@ -1,0 +1,480 @@
+/* ============================================================
+   Estilos globais (light DOM: páginas e composição)
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.45;
+  color: var(--ink);
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(27, 77, 62, 0.08), transparent 60%),
+    var(--paper);
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+#app {
+  min-height: 100dvh;
+}
+
+/* ---------- Estrutura de página ---------- */
+.page {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--sp-5) var(--sp-4) calc(var(--nav-height) + var(--sp-10));
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  animation: page-in 0.32s ease both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.section-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin-bottom: var(--sp-3);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+
+/* ---------- Métricas / números ---------- */
+.metric-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-soft);
+}
+
+.metric-value {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: 1.2;
+  margin-top: var(--sp-1);
+  word-break: break-word;
+}
+
+.metric-value.big {
+  font-size: var(--text-md);
+}
+
+.money {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pos {
+  color: var(--green);
+}
+
+.neg {
+  color: var(--red);
+}
+
+.muted {
+  color: var(--ink-soft);
+}
+
+.small {
+  font-size: var(--text-sm);
+}
+
+/* ---------- Chips e badges ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 2.5rem;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--pine);
+  border-color: var(--pine);
+  color: var(--paper);
+}
+
+.chip-row {
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding-bottom: var(--sp-1);
+  scrollbar-width: none;
+}
+
+.chip-row::-webkit-scrollbar {
+  display: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.badge.paid,
+.badge.received {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.badge.pending,
+.badge.expected,
+.badge.partially_paid {
+  background: var(--amber-bg);
+  color: var(--amber);
+}
+
+.badge.delayed {
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+.badge.canceled {
+  background: var(--neutral-bg);
+  color: var(--ink-faint);
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: var(--neutral-bg);
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Listas de itens ---------- */
+.item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4) 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.item-title.done {
+  text-decoration: line-through;
+  color: var(--ink-faint);
+}
+
+.item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-2);
+  margin-top: var(--sp-1);
+  font-size: var(--text-xs);
+  color: var(--ink-soft);
+  align-items: center;
+}
+
+.item-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-2);
+}
+
+.icon-btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  background: var(--paper-deep);
+}
+
+.icon-btn.danger {
+  color: var(--red);
+}
+
+/* ---------- Barras de proporção (relatórios) ---------- */
+.bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-2) 0;
+}
+
+.bar-track {
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--paper-deep);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--pine);
+  transition: width 0.4s ease;
+}
+
+/* ---------- FAB ---------- */
+.fab {
+  position: fixed;
+  right: max(var(--sp-4), calc(50vw - var(--page-max) / 2 + var(--sp-4)));
+  bottom: calc(var(--nav-height) + var(--sp-4) + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 3.5rem;
+  padding: 0 var(--sp-5);
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--pine);
+  color: var(--paper);
+  font-weight: 700;
+  font-size: var(--text-md);
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.fab:active {
+  transform: scale(0.96);
+}
+
+/* ---------- Formulários (composição) ---------- */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.form-grid .grid-2 {
+  gap: var(--sp-4);
+}
+
+.form-error {
+  background: var(--red-bg);
+  color: var(--red);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--sp-3);
+  margin-top: var(--sp-2);
+}
+
+.form-actions > * {
+  flex: 1;
+}
+
+/* ---------- Variações sobre fundo escuro (cards pine) ---------- */
+.on-dark .metric-label {
+  color: rgba(246, 243, 236, 0.7);
+}
+
+.on-dark .muted {
+  color: rgba(246, 243, 236, 0.6);
+}
+
+.on-dark .pos {
+  color: #97d8ae;
+}
+
+.on-dark .neg {
+  color: #f4a892;
+}
+
+/* ---------- Tela de login ---------- */
+.auth-wrap {
+  min-height: 100dvh;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+  text-align: center;
+}
+
+.auth-mark {
+  width: 76px;
+  height: 76px;
+  border-radius: 26px;
+  background: var(--pine);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-float);
+  animation: page-in 0.4s ease both;
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  font-weight: 400;
+  color: var(--pine-deep);
+  letter-spacing: -0.02em;
+}
+
+.auth-tagline {
+  color: var(--ink-soft);
+  max-width: 30ch;
+}
+
+.google-btn {
+  margin-top: var(--sp-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  min-height: 3.25rem;
+  padding: 0 var(--sp-6);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: var(--text-md);
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease;
+}
+
+.google-btn:active {
+  transform: scale(0.97);
+}
+
+.google-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* ---------- Acessibilidade ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--pine);
+  outline-offset: 2px;
+}

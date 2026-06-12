@@ -1,0 +1,22 @@
+{
+  "name": "controle-financeiro",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "MVP 1 — Controle financeiro pessoal mobile first (Web Components + TypeScript + Firebase)",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^11.1.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.2",
+    "vite": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

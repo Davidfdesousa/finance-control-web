@@ -1,0 +1,63 @@
+/* ============================================================
+   Tokens de design — "caderninho de contas"
+   Papel quente + verde-tinta + serifa para números grandes
+   ============================================================ */
+:root {
+  /* Cores base */
+  --paper: #f6f3ec;
+  --paper-deep: #ede8db;
+  --surface: #fffdf8;
+  --ink: #1e2b24;
+  --ink-soft: #5c6a61;
+  --ink-faint: #8d9a90;
+  --line: #e2dccc;
+
+  /* Marca */
+  --pine: #1b4d3e;
+  --pine-deep: #0f2f25;
+  --pine-soft: #dcebe2;
+
+  /* Tons de status */
+  --green: #2f7d4f;
+  --green-bg: #e3f0e7;
+  --amber: #a96812;
+  --amber-bg: #f7ecd9;
+  --red: #b3402a;
+  --red-bg: #f8e6e0;
+  --neutral-bg: #efece3;
+
+  /* Tipografia */
+  --font-display: 'Young Serif', 'Georgia', serif;
+  --font-body: 'Albert Sans', 'Segoe UI', sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2.125rem;
+
+  /* Espaçamento */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+
+  /* Raio */
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 22px;
+  --radius-full: 999px;
+
+  /* Sombra */
+  --shadow-card: 0 1px 2px rgba(30, 43, 36, 0.05), 0 10px 28px -16px rgba(30, 43, 36, 0.18);
+  --shadow-float: 0 6px 16px -4px rgba(15, 47, 37, 0.35);
+
+  /* Layout */
+  --nav-height: 4.25rem;
+  --page-max: 540px;
+  --touch: 48px;
+}
