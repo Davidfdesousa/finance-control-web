@@ -26,10 +26,10 @@ export const INCOME_STATUSES = ['expected', 'received', 'delayed', 'canceled'] a
 export type IncomeStatus = (typeof INCOME_STATUSES)[number];
 
 export const INCOME_STATUS_LABELS: Record<IncomeStatus, string> = {
-  expected: 'Prevista',
-  received: 'Recebida',
-  delayed: 'Atrasada',
-  canceled: 'Cancelada',
+  expected: 'Previsto',
+  received: 'Recebido',
+  delayed: 'Atrasado',
+  canceled: 'Cancelado',
 };
 
 export const INCOME_TYPES = [

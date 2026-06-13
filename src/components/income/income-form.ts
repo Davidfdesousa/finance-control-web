@@ -33,9 +33,7 @@ export class IncomeForm extends HTMLElement {
     }));
 
     if (income) {
-      this.field<UiInput>('description').value = income.description;
       this.field<UiMoneyInput>('expected').value = income.expectedValue;
-      this.field<UiMoneyInput>('received').value = income.receivedValue ?? null;
       this.field<UiSelect>('type').value = income.type;
       this.field<UiDateInput>('expectedDate').value = income.expectedDate ?? '';
       this.field<UiSelect>('status').value = income.status;
@@ -54,15 +52,11 @@ export class IncomeForm extends HTMLElement {
     this.innerHTML = `
       <form class="form-grid" novalidate>
         <p class="form-error" role="alert" hidden></p>
-        <ui-input data-f="description" label="Descrição" placeholder="Ex.: Salário"></ui-input>
-        <div class="grid-2">
-          <ui-money-input data-f="expected" label="Valor previsto"></ui-money-input>
-          <ui-money-input data-f="received" label="Valor recebido (opcional)"></ui-money-input>
-        </div>
         <ui-select data-f="type" label="Tipo de receita"></ui-select>
+        <ui-money-input data-f="expected" label="Valor"></ui-money-input>
         <div class="grid-2">
-          <ui-date-input data-f="expectedDate" label="Data prevista"></ui-date-input>
           <ui-select data-f="status" label="Status"></ui-select>
+          <ui-date-input data-f="expectedDate" label="Data prevista"></ui-date-input>
         </div>
         <ui-input data-f="notes" label="Observação" rows="2" placeholder="Opcional"></ui-input>
         <div class="form-actions">
@@ -83,23 +77,13 @@ export class IncomeForm extends HTMLElement {
   }
 
   private submit(): void {
-    const description = this.field<UiInput>('description');
     const expected = this.field<UiMoneyInput>('expected');
-    const received = this.field<UiMoneyInput>('received');
     const errorEl = this.querySelector('.form-error') as HTMLElement;
 
     let valid = true;
-    if (!description.value.trim()) {
-      description.setError('Informe a descrição.');
-      valid = false;
-    }
     const expectedValue = expected.value;
     if (expectedValue === null || expectedValue <= 0) {
       expected.setError('Informe um valor maior que zero.');
-      valid = false;
-    }
-    if (received.isInvalidText) {
-      received.setError('Valor inválido.');
       valid = false;
     }
 
@@ -109,13 +93,12 @@ export class IncomeForm extends HTMLElement {
 
     const notes = this.field<UiInput>('notes').value.trim();
     const expectedDate = this.field<UiDateInput>('expectedDate').value;
-    const receivedValue = received.value;
 
+    const incomeType = this.field<UiSelect>('type').value as IncomeInput['type'];
     const input: IncomeInput = {
-      description: description.value,
+      description: INCOME_TYPE_LABELS[incomeType],
       expectedValue: expectedValue as number,
-      receivedValue: receivedValue ?? undefined,
-      type: this.field<UiSelect>('type').value as IncomeInput['type'],
+      type: incomeType,
       expectedDate: expectedDate || undefined,
       status: this.field<UiSelect>('status').value as IncomeInput['status'],
       notes: notes || undefined,

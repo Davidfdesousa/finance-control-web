@@ -52,7 +52,6 @@ export class ExpenseForm extends HTMLElement {
     }));
 
     if (expense) {
-      this.field<UiInput>('description').value = expense.description;
       this.field<UiMoneyInput>('expected').value = expense.expectedValue;
       // this.field<UiMoneyInput>('actual').value = expense.actualValue ?? null;
       this.field<UiSelect>('category').value = expense.categoryId;
@@ -82,7 +81,6 @@ export class ExpenseForm extends HTMLElement {
         <ui-select data-f="category" label="Categoria" placeholder="Selecione…"></ui-select>
         <ui-select data-f="subcategory" label="Subcategoria" placeholder="Sem subcategoria"></ui-select>
         
-        <ui-input data-f="description" label="Descrição" placeholder="Ex.: Condomínio"></ui-input>
         <ui-select data-f="type" label="Tipo de despesa"></ui-select>
         <div >
           <ui-money-input data-f="expected" label="Valor previsto"></ui-money-input>
@@ -140,7 +138,6 @@ export class ExpenseForm extends HTMLElement {
   }
 
   private submit(): void {
-    const description = this.field<UiInput>('description');
     const expected = this.field<UiMoneyInput>('expected');
     // const actual = this.field<UiMoneyInput>('actual');
     const category = this.field<UiSelect>('category');
@@ -148,10 +145,6 @@ export class ExpenseForm extends HTMLElement {
     const errorEl = this.querySelector('.form-error') as HTMLElement;
 
     let valid = true;
-    if (!description.value.trim()) {
-      description.setError('Informe a descrição.');
-      valid = false;
-    }
     const expectedValue = expected.value;
     if (expectedValue === null || expectedValue <= 0) {
       expected.setError('Informe um valor maior que zero.');
@@ -179,8 +172,9 @@ export class ExpenseForm extends HTMLElement {
     const dueDate = this.field<UiDateInput>('due').value;
     // const actualValue = actual.value;
 
+    const categoryName = this.categories.find((c) => c.id === category.value)?.name ?? '';
     const input: ExpenseInput = {
-      description: description.value,
+      description: categoryName,
       expectedValue: expectedValue as number,
       // actualValue: actualValue ?? undefined,
       categoryId: category.value,
