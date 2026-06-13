@@ -21,12 +21,29 @@ import './components/expense/expense-list';
 import './components/expense/expense-form';
 import './components/income/income-list';
 import './components/income/income-form';
+import './components/recurring/recurring-template-list';
+import './components/recurring/recurring-template-item';
+import './components/recurring/recurring-template-form';
+import './components/recurring/month-generator-panel';
+import './components/installment/installment-list';
+import './components/installment/installment-form';
+import './components/installment/installment-detail';
+import './components/cards/credit-card-list';
+import './components/cards/credit-card-detail';
+import './components/cards/credit-card-invoice';
+import './components/cards/credit-card-invoice-item';
+import './components/reserve/emergency-reserve-card';
+import './components/ui/progress-bar';
 
 // Páginas
 import './pages/auth-page';
 import './pages/dashboard-page';
 import './pages/expenses-page';
 import './pages/incomes-page';
+import './pages/recurring-page';
+import './pages/installments-page';
+import './pages/cards-page';
+import './pages/emergency-reserve-page';
 import './pages/reports-page';
 import './pages/settings-page';
 

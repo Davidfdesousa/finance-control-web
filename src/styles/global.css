@@ -296,6 +296,20 @@ img {
   color: var(--red);
 }
 
+.plain-card {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.plain-card:focus-visible {
+  border-radius: var(--radius-lg);
+}
+
 /* ---------- Barras de proporção (relatórios) ---------- */
 .bar-row {
   display: flex;

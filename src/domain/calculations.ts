@@ -2,7 +2,17 @@
  * Regras de negócio financeiras — funções puras, sem dependência de UI ou Firebase.
  */
 import type { Category, Expense, Income, IncomeType } from './models';
+import type {
+  ApartmentUnit,
+  CreditCard,
+  CreditCardInvoice,
+  CreditCardInvoiceStatus,
+  EmergencyReserve,
+  InstallmentGroup,
+  RecurringTemplate,
+} from './models';
 import { round2 } from '../utils/format';
+import { parseMonthKey, shiftMonthRef, todayISO } from '../utils/month';
 
 /* ---------------- Valores efetivos por item ---------------- */
 
@@ -83,6 +93,179 @@ export function expectedBalance(incomes: readonly Income[], expenses: readonly E
 
 export function actualBalance(incomes: readonly Income[], expenses: readonly Expense[]): number {
   return round2(sumIncomeReceived(incomes) - sumExpensePaid(expenses));
+}
+
+/* ---------------- Recorrencias ---------------- */
+
+export function checkRecurringItemAlreadyGenerated(
+  template: RecurringTemplate,
+  monthRef: string,
+  expenses: readonly Expense[],
+  incomes: readonly Income[],
+): boolean {
+  const items = template.kind === 'expense' ? expenses : incomes;
+  return items.some((item) => item.monthRef === monthRef && item.recurringTemplateId === template.id);
+}
+
+function templateAppliesToMonth(template: RecurringTemplate, monthRef: string): boolean {
+  if (!template.isActive) return false;
+  if (monthRef < template.startMonthRef) return false;
+  if (template.endMonthRef && monthRef > template.endMonthRef) return false;
+  if (template.recurrenceFrequency === 'monthly') return true;
+
+  const start = parseMonthKey(template.startMonthRef);
+  const target = parseMonthKey(monthRef);
+  return start.month === target.month;
+}
+
+export function generateRecurringItemsForMonth(
+  templates: readonly RecurringTemplate[],
+  monthRef: string,
+  expenses: readonly Expense[],
+  incomes: readonly Income[],
+): RecurringTemplate[] {
+  return templates.filter(
+    (template) =>
+      templateAppliesToMonth(template, monthRef) &&
+      !checkRecurringItemAlreadyGenerated(template, monthRef, expenses, incomes),
+  );
+}
+
+export function generateRecurringItemsForRange(
+  templates: readonly RecurringTemplate[],
+  startMonthRef: string,
+  monthCount: number,
+  expenses: readonly Expense[],
+  incomes: readonly Income[],
+): Array<{ template: RecurringTemplate; monthRef: string }> {
+  const start = parseMonthKey(startMonthRef);
+  const result: Array<{ template: RecurringTemplate; monthRef: string }> = [];
+  for (let i = 0; i < monthCount; i += 1) {
+    const monthRef = shiftMonthRef(start, i).key;
+    for (const template of generateRecurringItemsForMonth(templates, monthRef, expenses, incomes)) {
+      result.push({ template, monthRef });
+    }
+  }
+  return result;
+}
+
+/* ---------------- Parcelamentos ---------------- */
+
+export function generateInstallments(
+  group: InstallmentGroup,
+  existingExpenses: readonly Expense[],
+): Array<{ monthRef: string; installmentNumber: number; value: number }> {
+  const start = parseMonthKey(group.startMonthRef);
+  const installments: Array<{ monthRef: string; installmentNumber: number; value: number }> = [];
+  for (let i = 0; i < group.installmentCount; i += 1) {
+    const monthRef = shiftMonthRef(start, i).key;
+    const installmentNumber = i + 1;
+    const alreadyGenerated = existingExpenses.some(
+      (expense) =>
+        expense.installmentGroupId === group.id &&
+        expense.installmentNumber === installmentNumber &&
+        expense.monthRef === monthRef,
+    );
+    if (!alreadyGenerated) {
+      installments.push({ monthRef, installmentNumber, value: group.installmentValue });
+    }
+  }
+  return installments;
+}
+
+export interface InstallmentProgress {
+  paidCount: number;
+  pendingCount: number;
+  totalPaid: number;
+  totalRemaining: number;
+}
+
+export function calculateInstallmentProgress(
+  group: InstallmentGroup,
+  expenses: readonly Expense[],
+): InstallmentProgress {
+  const groupExpenses = expenses.filter((expense) => expense.installmentGroupId === group.id);
+  const paidCount = groupExpenses.filter((expense) => expense.status === 'paid').length;
+  const totalPaid = sum(groupExpenses, expensePaidValue);
+  return {
+    paidCount,
+    pendingCount: Math.max(group.installmentCount - paidCount, 0),
+    totalPaid,
+    totalRemaining: round2(Math.max(group.totalValue - totalPaid, 0)),
+  };
+}
+
+/* ---------------- Faturas de cartao ---------------- */
+
+export function calculateCreditCardInvoiceStatus(
+  invoice: Pick<CreditCardInvoice, 'totalExpected' | 'totalPaid' | 'totalPending'>,
+  card?: Pick<CreditCard, 'dueDay'>,
+  monthRef?: string,
+): CreditCardInvoiceStatus {
+  if (invoice.totalExpected <= 0) return 'open';
+  if (invoice.totalPending <= 0) return 'paid';
+  if (invoice.totalPaid > 0) return 'partially_paid';
+  if (card?.dueDay && monthRef) {
+    const dueDate = `${monthRef}-${String(card.dueDay).padStart(2, '0')}`;
+    if (dueDate < todayISO()) return 'overdue';
+  }
+  return 'open';
+}
+
+export function calculateCreditCardInvoice(
+  card: CreditCard,
+  monthRef: string,
+  expenses: readonly Expense[],
+): CreditCardInvoice {
+  const cardExpenses = expenses.filter(
+    (expense) => expense.paymentMethodId === card.paymentMethodId && expense.status !== 'canceled',
+  );
+  const totalExpected = sumExpenseExpected(cardExpenses);
+  const totalPaid = sumExpensePaid(cardExpenses);
+  const totalPending = sumExpensePending(cardExpenses);
+  const base = { cardId: card.id, monthRef, expenses: cardExpenses, totalExpected, totalPaid, totalPending };
+  return {
+    ...base,
+    status: calculateCreditCardInvoiceStatus(base, card, monthRef),
+  };
+}
+
+/* ---------------- Reserva estruturada ---------------- */
+
+export interface EmergencyReserveProgress {
+  targetValue: number;
+  currentValue: number;
+  missingValue: number;
+  percent: number;
+  monthlyTargetValue: number;
+  currentMonthPlannedContribution: number;
+  currentMonthActualContribution: number;
+}
+
+export function calculateEmergencyReserveProgress(
+  reserve: EmergencyReserve | null,
+): EmergencyReserveProgress {
+  const targetValue = reserve?.targetValue ?? 0;
+  const currentValue = reserve?.currentValue ?? 0;
+  const missingValue = round2(Math.max(targetValue - currentValue, 0));
+  const percent = targetValue <= 0 ? 0 : Math.min(100, round2((currentValue / targetValue) * 100));
+  return {
+    targetValue,
+    currentValue,
+    missingValue,
+    percent,
+    monthlyTargetValue: reserve?.monthlyTargetValue ?? 0,
+    currentMonthPlannedContribution: reserve?.currentMonthPlannedContribution ?? 0,
+    currentMonthActualContribution: reserve?.currentMonthActualContribution ?? 0,
+  };
+}
+
+export function balanceAfterEmergencyReserve(
+  incomes: readonly Income[],
+  expenses: readonly Expense[],
+  reserve: EmergencyReserve | null,
+): number {
+  return round2(actualBalance(incomes, expenses) - (reserve?.currentMonthActualContribution ?? 0));
 }
 
 /* ---------------- Reserva ---------------- */
@@ -210,6 +393,19 @@ export function costCenterResult(
     incomes.filter((i) => i.type === incomeType),
     incomeReceivedValue,
   );
+  return { incomeTotal, costTotal, result: round2(incomeTotal - costTotal) };
+}
+
+export function calculateApartmentCurrentResult(
+  apartment: ApartmentUnit | null,
+  expenses: readonly Expense[],
+  categoryId: string,
+): CostCenterResult {
+  const costTotal = sum(
+    expenses.filter((e) => e.categoryId === categoryId),
+    expenseEffectiveValue,
+  );
+  const incomeTotal = apartment?.status === 'alugado' ? apartment.actualRentValue ?? 0 : 0;
   return { incomeTotal, costTotal, result: round2(incomeTotal - costTotal) };
 }
 

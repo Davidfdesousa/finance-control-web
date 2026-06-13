@@ -1,9 +1,15 @@
 import { appStore } from '../state/store';
 import { listIncomesByMonth } from '../services/income.service';
 import { listExpensesByMonth } from '../services/expense.service';
+import { getCreditCardInvoicesForMonth } from '../services/credit-card.service';
+import { getEmergencyReserve } from '../services/emergency-reserve.service';
+import { listRecurringTemplates } from '../services/recurring.service';
+import { getAptoMooca } from '../services/apartment.service';
 import {
   buildMonthSummary,
-  costCenterResult,
+  calculateApartmentCurrentResult,
+  calculateEmergencyReserveProgress,
+  generateRecurringItemsForMonth,
   groupExpensesByCategory,
   groupExpensesByPaymentMethod,
   upcomingPendingExpenses,
@@ -11,7 +17,15 @@ import {
   type KeyTotal,
 } from '../domain/calculations';
 import { APTO_MOOCA_CATEGORY_ID } from '../domain/seed';
-import { PROPERTY_STATUS_LABELS, type Expense, type Income } from '../domain/models';
+import {
+  PROPERTY_STATUS_LABELS,
+  type ApartmentUnit,
+  type CreditCardInvoice,
+  type EmergencyReserve,
+  type Expense,
+  type Income,
+  type RecurringTemplate,
+} from '../domain/models';
 import { formatCurrencyBRL, formatDateBR } from '../utils/format';
 import { escapeHtml } from '../utils/escape';
 import '../components/ui/ui-card';
@@ -29,6 +43,10 @@ function signClass(value: number): string {
 export class DashboardPage extends HTMLElement {
   private incomes: Income[] = [];
   private expenses: Expense[] = [];
+  private invoices: CreditCardInvoice[] = [];
+  private reserve: EmergencyReserve | null = null;
+  private recurringTemplates: RecurringTemplate[] = [];
+  private apartment: ApartmentUnit | null = null;
   private unsubscribe: (() => void) | null = null;
   private loadedKey = '';
   private requestKey = '';
@@ -73,13 +91,21 @@ export class DashboardPage extends HTMLElement {
     this.content.innerHTML = '<ui-loading label="Somando o mês…"></ui-loading>';
 
     try {
-      const [incomes, expenses] = await Promise.all([
+      const [incomes, expenses, invoices, reserve, recurringTemplates, apartment] = await Promise.all([
         listIncomesByMonth(user.id, monthRef.key),
         listExpensesByMonth(user.id, monthRef.key),
+        getCreditCardInvoicesForMonth(user.id, monthRef.key, appStore.get().paymentMethods),
+        getEmergencyReserve(user.id),
+        listRecurringTemplates(user.id),
+        getAptoMooca(user.id),
       ]);
       if (this.requestKey !== requestKey || !this.isConnected) return;
       this.incomes = incomes;
       this.expenses = expenses;
+      this.invoices = invoices;
+      this.reserve = reserve;
+      this.recurringTemplates = recurringTemplates;
+      this.apartment = apartment;
       this.renderContent();
     } catch (error) {
       console.error('Falha ao carregar o dashboard:', error);
@@ -100,7 +126,23 @@ export class DashboardPage extends HTMLElement {
     const pending = upcomingPendingExpenses(this.expenses, 5);
     const byCategory = groupExpensesByCategory(this.expenses);
     const byPayment = groupExpensesByPaymentMethod(this.expenses);
-    const apto = costCenterResult(this.expenses, this.incomes, APTO_MOOCA_CATEGORY_ID);
+    const apto = calculateApartmentCurrentResult(
+      this.apartment,
+      this.expenses,
+      APTO_MOOCA_CATEGORY_ID,
+    );
+    const reserveProgress = calculateEmergencyReserveProgress(this.reserve);
+    const recurringGenerated =
+      this.expenses.filter((e) => e.recurringTemplateId).length +
+      this.incomes.filter((i) => i.recurringTemplateId).length;
+    const recurringPending = generateRecurringItemsForMonth(
+      this.recurringTemplates,
+      appStore.get().monthRef.key,
+      this.expenses,
+      this.incomes,
+    ).length;
+    const itauInvoice = this.invoices.find((invoice) => invoice.cardId === 'cartao-itau');
+    const nubankInvoice = this.invoices.find((invoice) => invoice.cardId === 'cartao-nubank');
 
     const categoryName = (id: string): string => {
       const category = categories.find((c) => c.id === id);
@@ -179,10 +221,34 @@ export class DashboardPage extends HTMLElement {
         ${metricCard('Despesa pendente', summary.pendingExpense)}
         ${metricCard(
           'Reserva no mês',
-          summary.reservePaid,
-          `<p class="small muted">de ${formatCurrencyBRL(summary.reserveExpected)} planejado</p>`,
+          reserveProgress.currentValue,
+          `<p class="small muted">${reserveProgress.percent}% da meta</p>`,
         )}
+        ${metricCard('Fatura Itau', itauInvoice?.totalExpected ?? 0)}
+        ${metricCard('Fatura Nubank', nubankInvoice?.totalExpected ?? 0)}
       </div>
+
+      <section>
+        <h2 class="section-title">Automacoes do mes</h2>
+        <ui-card pad="sm">
+          <div class="item-row">
+            <span class="item-main">Recorrencias geradas</span>
+            <span class="money">${recurringGenerated}</span>
+          </div>
+          <div class="item-row">
+            <span class="item-main ${recurringPending > 0 ? 'neg' : ''}">Recorrencias pendentes</span>
+            <span class="money ${recurringPending > 0 ? 'neg' : ''}">${recurringPending}</span>
+          </div>
+          <div class="item-row">
+            <span class="item-main">Aporte reserva planejado</span>
+            <span class="money">${formatCurrencyBRL(reserveProgress.currentMonthPlannedContribution)}</span>
+          </div>
+          <div class="item-row">
+            <span class="item-main">Aporte reserva realizado</span>
+            <span class="money">${formatCurrencyBRL(reserveProgress.currentMonthActualContribution)}</span>
+          </div>
+        </ui-card>
+      </section>
 
       <section>
         <div class="row-between">
@@ -197,7 +263,7 @@ export class DashboardPage extends HTMLElement {
         <ui-card pad="sm">
           <div class="row-between">
             <span class="item-title">Centro de custo</span>
-            <span class="tag">${PROPERTY_STATUS_LABELS[settings.aptoMoocaStatus]}</span>
+            <span class="tag">${PROPERTY_STATUS_LABELS[this.apartment?.status ?? settings.aptoMoocaStatus]}</span>
           </div>
           <div class="item-row" style="margin-top: var(--sp-2);">
             <span class="item-main muted small">Aluguel recebido</span>

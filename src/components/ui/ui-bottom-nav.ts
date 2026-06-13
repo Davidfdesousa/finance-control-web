@@ -21,6 +21,26 @@ const ITEMS: NavItem[] = [
     icon: '<path d="M12 19V5"/><path d="m6 11 6-6 6 6"/>',
   },
   {
+    route: 'recorrencias',
+    label: 'Recorr.',
+    icon: '<path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+  },
+  {
+    route: 'parcelamentos',
+    label: 'Parcelas',
+    icon: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h10"/><path d="M7 13h4"/>',
+  },
+  {
+    route: 'cartoes',
+    label: 'Cartoes',
+    icon: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/>',
+  },
+  {
+    route: 'reserva',
+    label: 'Reserva',
+    icon: '<path d="M12 3v18"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/>',
+  },
+  {
     route: 'relatorios',
     label: 'Relatórios',
     icon: '<path d="M4 20v-6"/><path d="M10 20V4"/><path d="M16 20v-9"/><path d="M21 20H3"/>',
@@ -49,10 +69,15 @@ template.innerHTML = `
       max-width: var(--page-max, 540px);
       margin: 0 auto;
       height: var(--nav-height, 4.25rem);
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    nav::-webkit-scrollbar {
+      display: none;
     }
     a {
+      flex: 0 0 4.65rem;
       display: flex;
       flex-direction: column;
       align-items: center;

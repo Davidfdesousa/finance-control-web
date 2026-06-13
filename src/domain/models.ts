@@ -63,6 +63,7 @@ export interface Income {
   receivedDate?: string;
   status: IncomeStatus;
   notes?: string;
+  recurringTemplateId?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -115,7 +116,58 @@ export interface Expense {
   isRecurringCandidate?: boolean;
   recurringTemplateId?: string;
   installmentGroupId?: string;
+  installmentNumber?: number;
+  installmentCount?: number;
   creditCardInvoiceId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/* ---------------- Recorrencias ---------------- */
+
+export const RECURRENCE_FREQUENCIES = ['monthly', 'yearly'] as const;
+export type RecurrenceFrequency = (typeof RECURRENCE_FREQUENCIES)[number];
+
+export const RECURRENCE_FREQUENCY_LABELS: Record<RecurrenceFrequency, string> = {
+  monthly: 'Mensal',
+  yearly: 'Anual',
+};
+
+export interface RecurringTemplate {
+  id: string;
+  userId: string;
+  kind: 'income' | 'expense';
+  description: string;
+  expectedValue: number;
+  categoryId: string;
+  subcategoryId?: string;
+  paymentMethodId?: string;
+  incomeType?: IncomeType;
+  expenseType?: ExpenseType;
+  recurrenceFrequency: RecurrenceFrequency;
+  startMonthRef: string;
+  endMonthRef?: string;
+  dueDay?: number;
+  isActive: boolean;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/* ---------------- Parcelamentos ---------------- */
+
+export interface InstallmentGroup {
+  id: string;
+  userId: string;
+  description: string;
+  totalValue: number;
+  installmentCount: number;
+  installmentValue: number;
+  startMonthRef: string;
+  categoryId: string;
+  subcategoryId?: string;
+  paymentMethodId: string;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -176,6 +228,63 @@ export interface PaymentMethod {
   updatedAt: string;
 }
 
+/* ---------------- Cartoes ---------------- */
+
+export interface CreditCard {
+  id: string;
+  userId: string;
+  name: string;
+  bankName?: string;
+  brand?: string;
+  closingDay?: number;
+  dueDay?: number;
+  limit?: number;
+  isActive: boolean;
+  paymentMethodId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const CREDIT_CARD_INVOICE_STATUSES = [
+  'open',
+  'closed',
+  'paid',
+  'partially_paid',
+  'overdue',
+] as const;
+export type CreditCardInvoiceStatus = (typeof CREDIT_CARD_INVOICE_STATUSES)[number];
+
+export const CREDIT_CARD_INVOICE_STATUS_LABELS: Record<CreditCardInvoiceStatus, string> = {
+  open: 'Aberta',
+  closed: 'Fechada',
+  paid: 'Paga',
+  partially_paid: 'Parcial',
+  overdue: 'Vencida',
+};
+
+export interface CreditCardInvoice {
+  cardId: string;
+  monthRef: string;
+  expenses: Expense[];
+  totalExpected: number;
+  totalPaid: number;
+  totalPending: number;
+  status: CreditCardInvoiceStatus;
+}
+
+/* ---------------- Reserva de emergencia ---------------- */
+
+export interface EmergencyReserve {
+  id: string;
+  userId: string;
+  targetValue: number;
+  currentValue: number;
+  monthlyTargetValue: number;
+  currentMonthPlannedContribution: number;
+  currentMonthActualContribution: number;
+  updatedAt: string;
+}
+
 /* ---------------- Centro de custo: Apto Mooca ---------------- */
 
 export const PROPERTY_STATUSES = ['nao_alugado', 'em_reforma', 'anunciado', 'alugado'] as const;
@@ -187,6 +296,18 @@ export const PROPERTY_STATUS_LABELS: Record<PropertyStatus, string> = {
   anunciado: 'Anunciado',
   alugado: 'Alugado',
 };
+
+export interface ApartmentUnit {
+  id: string;
+  userId: string;
+  name: string;
+  status: PropertyStatus;
+  expectedRentValue?: number;
+  actualRentValue?: number;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 /** Configurações do usuário (guardadas no documento users/{uid}). */
 export interface UserSettings {
