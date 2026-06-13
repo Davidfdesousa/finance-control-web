@@ -164,7 +164,7 @@ export class ExpensesPage extends HTMLElement {
       console.error('Falha ao carregar despesas:', error);
       if (this.requestKey !== requestKey || !this.isConnected) return;
       this.content.innerHTML = `
-        <ui-empty-state icon="⚠️" heading="Não foi possível carregar"
+        <ui-empty-state heading="Não foi possível carregar"
           hint="Verifique sua conexão e tente novamente.">
           <ui-button size="sm" variant="outline" class="retry">Tentar de novo</ui-button>
         </ui-empty-state>
@@ -262,14 +262,14 @@ export class ExpensesPage extends HTMLElement {
 
     if (this.expenses.length === 0) {
       this.content.innerHTML = `
-        <ui-empty-state icon="🧾" heading="Nenhuma despesa neste mês"
+        <ui-empty-state heading="Nenhuma despesa neste mês"
           hint="Toque em “Nova despesa” para registrar a primeira."></ui-empty-state>
       `;
       return;
     }
     if (filtered.length === 0) {
       this.content.innerHTML = `
-        <ui-empty-state icon="🔍" heading="Nada com esses filtros"
+        <ui-empty-state heading="Nada com esses filtros"
           hint="Ajuste os filtros para ver outras despesas."></ui-empty-state>
       `;
       return;
@@ -280,7 +280,7 @@ export class ExpensesPage extends HTMLElement {
       const subcategory = category?.subcategories.find((s) => s.id === expense.subcategoryId);
       return {
         expense,
-        categoryLabel: category ? `${category.icon ?? ''} ${category.name}`.trim() : 'Sem categoria',
+        categoryLabel: category ? category.name : 'Sem categoria',
         subcategoryLabel: subcategory?.name,
         paymentLabel:
           paymentMethods.find((m) => m.id === expense.paymentMethodId)?.name ?? 'Sem forma',

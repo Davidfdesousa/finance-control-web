@@ -21,7 +21,7 @@ controle-financeiro/
     ├── styles/
     │   ├── tokens.css          # Design tokens (cores, espaçamento, raio, tipografia)
     │   └── global.css          # Estilos globais (páginas, listas, chips, FAB…)
-    ├── domain/                 # ❤ Regras de negócio — sem UI, sem Firebase
+    ├── domain/                 # Regras de negócio — sem UI, sem Firebase
     │   ├── models.ts           # Entidades: Income, Expense, Category, PaymentMethod…
     │   ├── calculations.ts     # Funções puras: totais, saldos, agrupamentos, resumo anual
     │   └── seed.ts             # Categorias/formas de pagamento padrão (Apto Mooca, Reserva…)
@@ -64,30 +64,18 @@ npm install
 
 ## 2. Configurar o Firebase
 
+Consulte o guia completo em [FIREBASE_SETUP.md](FIREBASE_SETUP.md).
+
+Resumo dos passos:
+
 1. Acesse o [Console do Firebase](https://console.firebase.google.com) e crie um projeto.
-2. **Authentication** → *Sign-in method* → habilite **Google**.
-3. **Firestore Database** → *Criar banco de dados* (modo production).
-4. Em **Configurações do projeto → Seus apps**, crie um app **Web** e copie as credenciais.
-5. Na raiz do projeto:
+2. Crie um app **Web** dentro do projeto e copie as credenciais geradas.
+3. **Authentication** → *Sign-in method* → habilite **Google**.
+4. **Firestore Database** → *Criar banco de dados* (modo production).
+5. Publique as regras de segurança a partir do arquivo `firestore.rules`.
+6. Copie o `.env.example` para `.env` e preencha com os valores do `firebaseConfig`.
 
-```bash
-copy .env.example .env   # (Windows)  |  cp .env.example .env  (macOS/Linux)
-```
-
-Preencha o `.env`:
-
-```
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=seu-projeto.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=seu-projeto
-VITE_FIREBASE_STORAGE_BUCKET=seu-projeto.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=...
-VITE_FIREBASE_APP_ID=...
-```
-
-6. Publique as regras de segurança: copie o conteúdo de `firestore.rules` em
-   **Firestore → Regras** (ou use `firebase deploy --only firestore:rules` com a CLI).
-7. Em **Authentication → Settings → Authorized domains**, confirme que `localhost` está na lista.
+O guia [FIREBASE_SETUP.md](FIREBASE_SETUP.md) cobre cada passo em detalhe, incluindo onde encontrar as configuracoes, como confirmar o dominio autorizado e um checklist de validacao.
 
 ## 3. Rodar localmente
 

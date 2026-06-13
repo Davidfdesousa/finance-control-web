@@ -47,25 +47,25 @@ function makeCategory(
 export function buildDefaultCategories(now: string): Category[] {
   return [
     // Receitas
-    makeCategory(now, 'salario', 'Salário', 'income', '💼', '#1b4d3e'),
-    makeCategory(now, 'ajuda-externa', 'Ajuda externa', 'income', '🤝', '#2f7d4f'),
-    makeCategory(now, 'freela', 'Freela', 'income', '🧑‍💻', '#3b6ea5'),
-    makeCategory(now, 'reembolso', 'Reembolso', 'income', '↩️', '#6b21a8'),
-    makeCategory(now, 'aluguel-recebido', 'Aluguel recebido', 'income', '🏢', '#a96812'),
-    makeCategory(now, 'outros-receitas', 'Outros', 'income', '➕', '#5c6a61'),
+    makeCategory(now, 'salario', 'Salário', 'income', '', '#1b4d3e'),
+    makeCategory(now, 'ajuda-externa', 'Ajuda externa', 'income', '', '#2f7d4f'),
+    makeCategory(now, 'freela', 'Freela', 'income', '', '#3b6ea5'),
+    makeCategory(now, 'reembolso', 'Reembolso', 'income', '', '#6b21a8'),
+    makeCategory(now, 'aluguel-recebido', 'Aluguel recebido', 'income', '', '#a96812'),
+    makeCategory(now, 'outros-receitas', 'Outros', 'income', '', '#5c6a61'),
 
     // Despesas
-    makeCategory(now, 'moradia', 'Moradia', 'expense', '🏠', '#1b4d3e', [
+    makeCategory(now, 'moradia', 'Moradia', 'expense', '', '#1b4d3e', [
       ['aluguel', 'Aluguel'],
     ]),
-    makeCategory(now, APTO_MOOCA_CATEGORY_ID, 'Apto Mooca', 'expense', '🏢', '#a96812', [
+    makeCategory(now, APTO_MOOCA_CATEGORY_ID, 'Apto Mooca', 'expense', '', '#a96812', [
       ['parcela', 'Parcela'],
       ['condominio', 'Condomínio'],
       ['enel', 'Enel'],
       ['reforma', 'Reforma'],
       ['manutencao', 'Manutenção'],
     ]),
-    makeCategory(now, 'carro', 'Carro', 'expense', '🚗', '#3b6ea5', [
+    makeCategory(now, 'carro', 'Carro', 'expense', '', '#3b6ea5', [
       ['gasolina', 'Gasolina'],
       ['seguro', 'Seguro'],
       ['manutencao', 'Manutenção'],
@@ -73,7 +73,7 @@ export function buildDefaultCategories(now: string): Category[] {
       ['estacionamento', 'Estacionamento'],
       ['multas', 'Multas'],
     ]),
-    makeCategory(now, 'saude', 'Saúde', 'expense', '🩺', '#b3402a', [
+    makeCategory(now, 'saude', 'Saúde', 'expense', '', '#b3402a', [
       ['psicologo', 'Psicólogo'],
       ['venvanse', 'Venvanse'],
       ['bupropiona', 'Bupropiona'],
@@ -82,14 +82,14 @@ export function buildDefaultCategories(now: string): Category[] {
       ['exames', 'Exames'],
       ['farmacia', 'Farmácia'],
     ]),
-    makeCategory(now, 'pets', 'Pets', 'expense', '🐾', '#7c5e2a', [
+    makeCategory(now, 'pets', 'Pets', 'expense', '', '#7c5e2a', [
       ['petlove', 'Petlove'],
       ['racao', 'Ração'],
       ['areia', 'Areia'],
       ['veterinario', 'Veterinário'],
       ['medicamentos', 'Medicamentos'],
     ]),
-    makeCategory(now, 'assinaturas', 'Assinaturas', 'expense', '🔁', '#6b21a8', [
+    makeCategory(now, 'assinaturas', 'Assinaturas', 'expense', '', '#6b21a8', [
       ['gpt', 'GPT'],
       ['claude', 'Claude'],
       ['grok', 'Grok'],
@@ -100,11 +100,11 @@ export function buildDefaultCategories(now: string): Category[] {
     ]),
 
     // Reserva: categoria especial — dinheiro separado, não dinheiro perdido
-    makeCategory(now, RESERVE_CATEGORY_ID, 'Reserva', 'special', '🛟', '#2f7d4f', [
+    makeCategory(now, RESERVE_CATEGORY_ID, 'Reserva', 'special', '', '#2f7d4f', [
       ['emergencia', 'Reserva de emergência'],
     ]),
 
-    makeCategory(now, 'outros-despesas', 'Outros', 'expense', '📦', '#5c6a61'),
+    makeCategory(now, 'outros-despesas', 'Outros', 'expense', '', '#5c6a61'),
   ];
 }
 

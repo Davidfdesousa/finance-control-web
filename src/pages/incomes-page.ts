@@ -102,7 +102,7 @@ export class IncomesPage extends HTMLElement {
       console.error('Falha ao carregar receitas:', error);
       if (this.requestKey !== requestKey || !this.isConnected) return;
       this.content.innerHTML = `
-        <ui-empty-state icon="⚠️" heading="Não foi possível carregar"
+        <ui-empty-state heading="Não foi possível carregar"
           hint="Verifique sua conexão e tente novamente.">
           <ui-button size="sm" variant="outline" class="retry">Tentar de novo</ui-button>
         </ui-empty-state>
@@ -169,7 +169,7 @@ export class IncomesPage extends HTMLElement {
   private renderList(): void {
     if (this.incomes.length === 0) {
       this.content.innerHTML = `
-        <ui-empty-state icon="💸" heading="Nenhuma receita neste mês"
+        <ui-empty-state heading="Nenhuma receita neste mês"
           hint="Toque em “Nova receita” para registrar a primeira."></ui-empty-state>
       `;
       return;

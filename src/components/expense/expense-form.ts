@@ -36,7 +36,7 @@ export class ExpenseForm extends HTMLElement {
 
     this.field<UiSelect>('category').options = this.categories.map((c) => ({
       value: c.id,
-      label: `${c.icon ?? ''} ${c.name}`.trim(),
+      label: c.name,
     }));
     this.field<UiSelect>('payment').options = paymentMethods.map((m) => ({
       value: m.id,

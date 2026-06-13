@@ -86,7 +86,7 @@ export class ReportsPage extends HTMLElement {
       console.error('Falha ao carregar relatório anual:', error);
       if (this.requestKey !== requestKey || !this.isConnected) return;
       this.content.innerHTML = `
-        <ui-empty-state icon="⚠️" heading="Não foi possível carregar"
+        <ui-empty-state heading="Não foi possível carregar"
           hint="Verifique sua conexão e tente novamente.">
           <ui-button size="sm" variant="outline" class="retry">Tentar de novo</ui-button>
         </ui-empty-state>
@@ -98,7 +98,7 @@ export class ReportsPage extends HTMLElement {
   private renderContent(summary: YearSummary): void {
     if (summary.monthsWithData === 0) {
       this.content.innerHTML = `
-        <ui-empty-state icon="📊" heading="Sem movimentação em ${this.year}"
+        <ui-empty-state heading="Sem movimentação em ${this.year}"
           hint="Cadastre receitas e despesas para ver o resumo anual."></ui-empty-state>
       `;
       return;
@@ -107,7 +107,7 @@ export class ReportsPage extends HTMLElement {
     const { categories, paymentMethods } = appStore.get();
     const categoryName = (id: string): string => {
       const category = categories.find((c) => c.id === id);
-      return category ? `${category.icon ?? ''} ${category.name}`.trim() : id;
+      return category ? category.name : id;
     };
     const paymentName = (id: string): string =>
       paymentMethods.find((m) => m.id === id)?.name ?? id;

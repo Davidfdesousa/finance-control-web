@@ -48,7 +48,7 @@ export class SettingsPage extends HTMLElement {
         (c) => `
           <div class="item-row">
             <div class="item-main">
-              <p class="item-title">${escapeHtml(`${c.icon ?? ''} ${c.name}`.trim())}
+              <p class="item-title">${escapeHtml(c.name)}
                 <span class="tag">${CATEGORY_TYPE_LABELS[c.type]}</span>
               </p>
               ${

@@ -5,7 +5,7 @@
   "type": "module",
   "description": "MVP 1 — Controle financeiro pessoal mobile first (Web Components + TypeScript + Firebase)",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

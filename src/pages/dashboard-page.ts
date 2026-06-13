@@ -38,7 +38,7 @@ export class DashboardPage extends HTMLElement {
     this.innerHTML = `
       <div class="page">
         <header>
-          <p class="muted small">Olá, ${escapeHtml(userName)} 👋</p>
+          <p class="muted small">Olá, ${escapeHtml(userName)}</p>
           <h1 class="page-title">Visão do mês</h1>
         </header>
         <ui-month-switcher></ui-month-switcher>
@@ -85,7 +85,7 @@ export class DashboardPage extends HTMLElement {
       console.error('Falha ao carregar o dashboard:', error);
       if (this.requestKey !== requestKey || !this.isConnected) return;
       this.content.innerHTML = `
-        <ui-empty-state icon="⚠️" heading="Não foi possível carregar"
+        <ui-empty-state heading="Não foi possível carregar"
           hint="Verifique sua conexão e tente novamente.">
           <ui-button size="sm" variant="outline" class="retry">Tentar de novo</ui-button>
         </ui-empty-state>
@@ -104,7 +104,7 @@ export class DashboardPage extends HTMLElement {
 
     const categoryName = (id: string): string => {
       const category = categories.find((c) => c.id === id);
-      return category ? `${category.icon ?? ''} ${category.name}`.trim() : id;
+      return category ? category.name : id;
     };
     const paymentName = (id: string): string =>
       paymentMethods.find((m) => m.id === id)?.name ?? id;
@@ -140,7 +140,7 @@ export class DashboardPage extends HTMLElement {
 
     const pendingRows =
       pending.length === 0
-        ? '<p class="muted small">Nenhuma despesa pendente. 🎉</p>'
+        ? '<p class="muted small">Nenhuma despesa pendente.</p>'
         : pending
             .map(
               (e) => `
@@ -196,7 +196,7 @@ export class DashboardPage extends HTMLElement {
         <h2 class="section-title">Apto Mooca</h2>
         <ui-card pad="sm">
           <div class="row-between">
-            <span class="item-title">🏢 Centro de custo</span>
+            <span class="item-title">Centro de custo</span>
             <span class="tag">${PROPERTY_STATUS_LABELS[settings.aptoMoocaStatus]}</span>
           </div>
           <div class="item-row" style="margin-top: var(--sp-2);">

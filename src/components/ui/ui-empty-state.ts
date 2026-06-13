@@ -12,10 +12,6 @@ template.innerHTML = `
       padding: 2.5rem 1.5rem;
       text-align: center;
     }
-    .icon {
-      font-size: 2.25rem;
-      line-height: 1;
-    }
     .title {
       margin: 0;
       font-family: var(--font-display);
@@ -36,7 +32,6 @@ template.innerHTML = `
     }
   </style>
   <div class="wrap" part="wrap">
-    <div class="icon" aria-hidden="true"></div>
     <p class="title"></p>
     <p class="hint"></p>
     <slot></slot>
@@ -44,9 +39,8 @@ template.innerHTML = `
 `;
 
 export class UiEmptyState extends HTMLElement {
-  static observedAttributes = ['icon', 'heading', 'hint'];
+  static observedAttributes = ['heading', 'hint'];
 
-  private iconEl: HTMLElement;
   private titleEl: HTMLElement;
   private hintEl: HTMLElement;
 
@@ -54,13 +48,11 @@ export class UiEmptyState extends HTMLElement {
     super();
     const root = this.attachShadow({ mode: 'open' });
     root.appendChild(template.content.cloneNode(true));
-    this.iconEl = root.querySelector('.icon') as HTMLElement;
     this.titleEl = root.querySelector('.title') as HTMLElement;
     this.hintEl = root.querySelector('.hint') as HTMLElement;
   }
 
   attributeChangedCallback(): void {
-    this.iconEl.textContent = this.getAttribute('icon') ?? '📭';
     this.titleEl.textContent = this.getAttribute('heading') ?? 'Nada por aqui';
     this.hintEl.textContent = this.getAttribute('hint') ?? '';
   }
